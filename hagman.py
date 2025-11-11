@@ -46,7 +46,7 @@ class SecretWord:
 
 
 
-class AsciiGallows:
+class StickmanDrawing:
     """Renders the hangman based on number of wrong guesses (0-8)."""
     STAGES = [
         "",
@@ -64,3 +64,55 @@ class AsciiGallows:
     def render(cls, mistakes: int) -> str:
         mistakes = max(0, min(8, mistakes))
         return cls.STAGES[mistakes]
+
+
+
+class Hangman:
+    """
+    Controls the flow of the game:
+    - Keeps track of correct and wrong guesses:
+    - Knows remaning attempts
+    - uses SecretWord to manage the hidden word
+    """
+
+     MAX_MISTAKES = 8
+
+    def __init__(self, secret_word: str):
+        self.secret = SecretWord(secret_word)
+        self.wrong_letters = set()
+
+    def remaining_attempts(self):
+        return self.MAX_MISTAKES - len(self.wrong_letters)
+
+    def is_lost(self):
+        return len(self.wrong_letters) >= self.MAX_MISTAKES
+
+    def is_won(self):
+        return self.secret.is_fully_revealed()
+
+    def guess(self, letter: str) -> bool:
+        """Apply a guess. Returns True if correct."""
+        if not letter or len(letter) != 1 or letter.lower() not in string.ascii_lowercase:
+            print("⚠️  Please guess a single letter (A–Z).")
+            return None
+        letter = letter.lower()
+        if letter in self.wrong_letters or letter in self.secret.revealed:
+            print(f"⚠️  You already tried '{letter}'.")
+            return None
+        if self.secret.guess(letter):
+            print(f"✅ Good guess: '{letter}' is in the word!")
+            return True
+        else:
+            print(f"❌ Sorry: '{letter}' is not in the word.")
+            self.wrong_letters.add(letter)
+            return False
+
+    def display_state(self):
+        print(AsciiGallows.render(len(self.wrong_letters)))
+        print(f"Word:    {self.secret.display()}")
+        if self.wrong_letters:
+            print(f"Wrong:   {' '.join(sorted(self.wrong_letters))}")
+        print(f"Tries left: {self.remaining_attempts()}")
+        print("-" * 32)
+
+        
