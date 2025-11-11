@@ -42,3 +42,25 @@ class SecretWord:
     def is_fully_revealed(self) -> bool:
         """True if all letters have been guessed."""
         return not self.unique_letters
+
+
+
+
+class AsciiGallows:
+    """Renders the hangman based on number of wrong guesses (0-8)."""
+    STAGES = [
+        "",
+        "+-----.\n|     \n|     \n|     \n'-----",
+        "+-----.\n|     O\n|     \n|     \n'-----",
+        "+-----.\n|     O\n|     |\n|     \n'-----",
+        "+-----.\n|     O\n|    /|\n|     \n'-----",
+        "+-----.\n|     O\n|    /|\\\n|     \n'-----",
+        "+-----.\n|     O\n|    /|\\\n|    / \n'-----",
+        "+-----.\n|     O\n|    /|\\\n|    / \\\n'-----",
+        "+-----.\n|     O\n|    /|\\\n|    / \\\n'----- #"
+    ]
+
+    @classmethod
+    def render(cls, mistakes: int) -> str:
+        mistakes = max(0, min(8, mistakes))
+        return cls.STAGES[mistakes]
