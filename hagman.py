@@ -75,7 +75,7 @@ class Hangman:
     - uses SecretWord to manage the hidden word
     """
 
-     MAX_MISTAKES = 8
+    MAX_MISTAKES = 8
 
     def __init__(self, secret_word: str):
         self.secret = SecretWord(secret_word)
@@ -93,7 +93,7 @@ class Hangman:
     def guess(self, letter: str) -> bool:
         """Apply a guess. Returns True if correct."""
         if not letter or len(letter) != 1 or letter.lower() not in string.ascii_lowercase:
-            print("⚠️  Please guess a single letter (A–Z).")
+            print("⚠️  Please guess a single letter (A-Z).")
             return None
         letter = letter.lower()
         if letter in self.wrong_letters or letter in self.secret.revealed:
@@ -108,11 +108,31 @@ class Hangman:
             return False
 
     def display_state(self):
-        print(AsciiGallows.render(len(self.wrong_letters)))
+        print(StickmanDrawing.render(len(self.wrong_letters)))
         print(f"Word:    {self.secret.display()}")
         if self.wrong_letters:
             print(f"Wrong:   {' '.join(sorted(self.wrong_letters))}")
         print(f"Tries left: {self.remaining_attempts()}")
         print("-" * 32)
 
-        
+
+def main():
+    print("Welcome to Hagman (OOP version with SecretWord)")
+    secret = getpass.getpass("Player 1, enter the secret word (hidden): ")
+    game = Hangman(secret)
+
+    while not (game.is_won() or game.is_lost()):
+        game.display_state()
+        guess = input("Your guess: ").strip()
+        game.guess(guess)
+        print()
+
+    game.display_state()
+    if game.is_won():
+        print(f"🎉 You WON! The word was '{game.secret.word}'.")
+    else:
+        print(f"💀 You LOST. The word was '{game.secret.word}'.")
+
+
+if __name__ == "__main__":
+    main()
