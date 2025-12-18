@@ -1,0 +1,38 @@
+name: Python CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - edited
+      - synchronize   # very important: triggers on new commits
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Get code from the repository
+      - name: Get code
+        uses: actions/checkout@v4
+
+      # 2Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # 3Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install pylint mypy
+
+      # 4Run Pylint
+      - name: Run Pylint
+        run: pylint src || true
+
+      # 5Run MyPy
+      - name: Run MyPy
+        run: mypy src || true
