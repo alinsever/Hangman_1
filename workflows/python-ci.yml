@@ -1,38 +1,28 @@
-name: Python CI
+name: Deploy Workflow
 
-on:
-  pull_request:
-    branches:
-      - main
-    types:
-      - opened
-      - edited
-      - synchronize   # very important: triggers on new commits
+on: push
 
 jobs:
-  lint:
+  tests:
     runs-on: ubuntu-latest
 
     steps:
-      # Get code from the repository
       - name: Get code
         uses: actions/checkout@v4
 
-      # 2Set up Python
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+      - name: Install pylint
+        run: pip install pylint
 
-      # 3Install dependencies
-      - name: Install dependencies
-        run: |
-          pip install pylint mypy
+      - name: Run pylint
+        run: pylint .
 
-      # 4Run Pylint
-      - name: Run Pylint
-        run: pylint src || true
+  deploy:
+    needs: tests   # this statement: the deploy job waits for tests to finish
+    runs-on: ubuntu-latest
 
-      # 5Run MyPy
-      - name: Run MyPy
-        run: mypy src || true
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        run: echo "Deploying..."
